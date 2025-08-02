@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:todo_app/presentation/bloc/task_event.dart';
 import 'package:todo_app/presentation/bloc/task_state.dart';
 import '../../data/task_repository.dart';
 import '../../models/task.dart';
+
 
 enum TaskFilter { all, active, completed }
 
@@ -57,8 +57,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       case TaskFilter.completed:
         return tasks.where((task) => task.isCompleted).toList();
       case TaskFilter.all:
-      default:
-        return tasks;
+      return tasks;
     }
   }
 
