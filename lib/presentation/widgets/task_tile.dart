@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/task.dart';
 import '../bloc/task_bloc.dart';
@@ -10,46 +11,33 @@ class TaskTile extends StatelessWidget {
   final Task task;
   const TaskTile({super.key, required this.task});
 
-  Color getPriorityColor() {
-    switch (task.priority) {
-      case TaskPriority.high:
-        return Colors.red;
-      case TaskPriority.medium:
-        return Colors.orange;
-      case TaskPriority.low:
-        return Colors.green;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<TaskBloc>();
+
+    Color getPriorityColor() {
+      switch (task.priority) {
+        case TaskPriority.high:
+          return Colors.red;
+        case TaskPriority.medium:
+          return Colors.orange;
+        case TaskPriority.low:
+          return Colors.green;
+      }
+    }
 
     return Material(
       elevation: 2,
       borderRadius: BorderRadius.circular(12),
       color: Theme.of(context).colorScheme.surface,
       child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => BlocProvider.value(
-                value: BlocProvider.of<TaskBloc>(context),
-                child: Scaffold(
-                  appBar: AppBar(title: const Text('Edit Task')),
-                  body: TaskFormWidget(
-                    task: task,
-                    onSaved: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-        onLongPress: () => _confirmDelete(context, bloc),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => TaskFormWidget(task: task),
+          ),
+        ),
+        onLongPress: () => _confirmDelete(context, task),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -69,7 +57,7 @@ class TaskTile extends StatelessWidget {
                   children: [
                     Text(
                       task.title,
-                      style: TextStyle(
+                      style: GoogleFonts.roboto(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
                         decoration: task.isCompleted ? TextDecoration.lineThrough : null,
@@ -80,7 +68,7 @@ class TaskTile extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 4.0),
                         child: Text(
                           task.description!,
-                          style: TextStyle(
+                          style: GoogleFonts.roboto(
                             fontSize: 13,
                             color: Theme.of(context).hintColor,
                           ),
@@ -95,20 +83,22 @@ class TaskTile extends StatelessWidget {
                               const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
                               const SizedBox(width: 4),
                               Text(
-                                '${task.dueDate!.toLocal()}'.split(' ')[0],
-                                style: const TextStyle(fontSize: 12),
+                                task.dueDate!.toLocal().toString().split(' ')[0],
+                                style: GoogleFonts.roboto(fontSize: 12),
                               ),
                             ],
                           ),
                         const Spacer(),
                         Chip(
-                          label: Text(task.priority.name.toUpperCase()),
-                          backgroundColor: getPriorityColor().withOpacity(0.15),
-                          labelStyle: TextStyle(
-                            color: getPriorityColor(),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12,
+                          label: Text(
+                            task.priority.name.toUpperCase(),
+                            style: GoogleFonts.roboto(
+                              color: getPriorityColor(),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                            ),
                           ),
+                          backgroundColor: getPriorityColor().withOpacity(0.15),
                           padding: const EdgeInsets.symmetric(horizontal: 6),
                           visualDensity: VisualDensity.compact,
                         ),
@@ -124,20 +114,21 @@ class TaskTile extends StatelessWidget {
     );
   }
 
-  void _confirmDelete(BuildContext context, TaskBloc bloc) {
+  void _confirmDelete(BuildContext context, Task task) {
+    final bloc = context.read<TaskBloc>();
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Delete Task'),
-        content: const Text('Are you sure you want to delete this task?'),
+        title: Text('Delete Task', style: GoogleFonts.roboto(fontWeight: FontWeight.w600)),
+        content: Text('Are you sure you want to delete this task?', style: GoogleFonts.roboto()),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text('Cancel', style: GoogleFonts.roboto())),
           ElevatedButton(
             onPressed: () {
               bloc.add(DeleteTaskEvent(task));
               Navigator.pop(context);
             },
-            child: const Text('Delete'),
+            child: Text('Delete', style: GoogleFonts.roboto(fontWeight: FontWeight.w600)),
           ),
         ],
       ),

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_app/presentation/widgets/task_tile.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import '../bloc/task_bloc.dart';
 import '../bloc/task_event.dart';
 import '../bloc/task_state.dart';
 import '../widgets/TaskFormWidget.dart';
-
+import '../widgets/task_tile.dart';
 class TaskHomePage extends StatelessWidget {
   const TaskHomePage({super.key});
 
@@ -16,7 +15,7 @@ class TaskHomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Tasks'),
+        title: Text('MY TASKS', style: GoogleFonts.roboto(fontWeight: FontWeight.normal, fontSize: 22)),
         actions: [
           PopupMenuButton<TaskFilter>(
             onSelected: (filter) => bloc.add(ChangeFilterEvent(filter)),
@@ -25,7 +24,7 @@ class TaskHomePage extends StatelessWidget {
               PopupMenuItem(value: TaskFilter.active, child: Text('Active')),
               PopupMenuItem(value: TaskFilter.completed, child: Text('Completed')),
             ],
-          )
+          ),
         ],
       ),
       body: BlocBuilder<TaskBloc, TaskState>(
@@ -33,7 +32,12 @@ class TaskHomePage extends StatelessWidget {
           if (state is TaskLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is TaskLoaded && state.tasks.isEmpty) {
-            return const Center(child: Text('No tasks yet. Tap "+" to add.'));
+            return Center(
+              child: Text(
+                'No tasks yet.',
+                style: GoogleFonts.roboto(fontSize: 16),
+              ),
+            );
           } else if (state is TaskLoaded) {
             return Scrollbar(
               radius: const Radius.circular(12),
@@ -50,26 +54,12 @@ class TaskHomePage extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => BlocProvider.value(
-                value: BlocProvider.of<TaskBloc>(context),
-                child: Scaffold(
-                  appBar: AppBar(title: const Text('New Task')),
-                  body: TaskFormWidget(
-                    onSaved: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const TaskFormWidget()),
+        ),
         icon: const Icon(Icons.add),
-        label: const Text('New Task'),
+        label: Text('New Task', style: GoogleFonts.roboto(fontWeight: FontWeight.w600)),
       ),
     );
   }
